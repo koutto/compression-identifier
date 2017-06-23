@@ -2,8 +2,8 @@ from optparse import OptionParser, OptionGroup
 from colorama import *
 import os
 import sys
-import StringIO
-import string
+#import StringIO
+from io import StringIO
 import zlib
 import gzip
 
