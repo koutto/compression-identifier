@@ -2,8 +2,9 @@ from optparse import OptionParser, OptionGroup
 from colorama import *
 import os
 import sys
-#import StringIO
+# import StringIO
 from io import StringIO
+import io
 import zlib
 import gzip
 
@@ -277,7 +278,7 @@ def print_gzip_header(data):
 
 def print_gzip_compressed(data):
     print_gzip_header(data)
-    print
+    print()
     print_info('Full hexdump of compressed data:')
     print(hexdump(data))
     print()
@@ -319,41 +320,43 @@ parser = OptionParser(usage)
 
 input_data = OptionGroup(parser, 'Input')
 input_data.add_option('-d', '', help='Raw data', action='store', type='string', dest='raw_data', default=None)
-input_data.add_option('-f', '', help='File containing raw data', action='store', type='string', dest='file_raw', \
+input_data.add_option('-f', '', help='File containing raw data', action='store', type='string', dest='file_raw',
                       default=None)
-input_data.add_option('', '--offset', help='Beginning offset for decompression', action='store', type='string', \
+input_data.add_option('', '--offset', help='Beginning offset for decompression', action='store', type='string',
                       dest='offset', default=0)
-
+# -----------------------------------------------------------------------------------------------------------------------------------------------
 output = OptionGroup(parser, 'Output')
 output.add_option('-o', '', help='Output file (raw)', action='store', type='string', dest='output_file', default=None)
-
+# -----------------------------------------------------------------------------------------------------------------------------------------------
 ident = OptionGroup(parser, 'Automatic identification')
-ident.add_option('', '--scan', help='Scan input and search for compressed data', action='store_true', \
+ident.add_option('', '--scan', help='Scan input and search for compressed data', action='store_true',
                  dest='auto_detect', default=False)
-
+# -----------------------------------------------------------------------------------------------------------------------------------------------
 zlib_format = OptionGroup(parser, 'Zlib compressed format (RFC 1950)')
-zlib_format.add_option('', '--zlib-c', help='Compress using Zlib', action='store_true', dest='compress_zlib',\
+zlib_format.add_option('', '--zlib-c', help='Compress using Zlib', action='store_true', dest='compress_zlib',
                        default=False)
-zlib_format.add_option('', '--zlib-d', help='Decompress using Zlib', action='store_true', dest='decompress_zlib',\
+zlib_format.add_option('', '--zlib-d', help='Decompress using Zlib', action='store_true', dest='decompress_zlib',
                        default=False)
-
+# -----------------------------------------------------------------------------------------------------------------------------------------------
 deflate_format = OptionGroup(parser, 'Deflate compressed format (RFC 1951)')
-deflate_format.add_option('', '--deflate-c', help='Compress using Deflate', action='store_true',\
+deflate_format.add_option('', '--deflate-c', help='Compress using Deflate', action='store_true',
                           dest='compress_deflate', default=False)
-deflate_format.add_option('', '--deflate-d', help='Decompress using Deflate', action='store_true',\
+deflate_format.add_option('', '--deflate-d', help='Decompress using Deflate', action='store_true',
                           dest='decompress_deflate', default=False)
-
+# -----------------------------------------------------------------------------------------------------------------------------------------------
 gzip_format = OptionGroup(parser, 'Gzip compressed format (RFC 1952)')
-gzip_format.add_option('', '--gzip-c', help='Compress using Gzip', action='store_true', dest='compress_gzip',default=False)
-gzip_format.add_option('', '--gzip-d', help='Decompress using Gzip', action='store_true', dest='decompress_gzip',default=False)
-
+gzip_format.add_option('', '--gzip-c', help='Compress using Gzip', action='store_true', dest='compress_gzip',
+                       default=False)
+gzip_format.add_option('', '--gzip-d', help='Decompress using Gzip', action='store_true', dest='decompress_gzip',
+                       default=False)
+# -----------------------------------------------------------------------------------------------------------------------------------------------
 parser.add_option_group(input_data)
 parser.add_option_group(output)
 parser.add_option_group(ident)
 parser.add_option_group(zlib_format)
 parser.add_option_group(deflate_format)
 parser.add_option_group(gzip_format)
-
+# -----------------------------------------------------------------------------------------------------------------------------------------------
 options, arguments = parser.parse_args()
 
 if (options.raw_data is None and options.file_raw is None) or \
@@ -415,12 +418,12 @@ if options.compress_zlib:
         print_error('Unable to compress')
     else:
         print_success('Data compressed using Zlib with success')
-        print
+        print()
         print_zlib_compressed(output)
 
 if options.decompress_zlib:
     print_title('Decompression using Zlib (RFC 1950)')
-    print
+    print()
     # (valid_wbits, truncated_wbits, decompressed) = decompress_zlib(data)
     output = decompress_zlib(data)
     # if truncated_wbits:
@@ -439,7 +442,7 @@ if options.decompress_zlib:
 # Deflate compressed format (RFC 1951)
 if options.compress_deflate:
     print_title('Compression using Deflate (RFC 1951)')
-    print
+    print()
     output = compress_deflate(data)
     if not output:
         print_error('Unable to compress')
@@ -462,7 +465,7 @@ if options.decompress_deflate:
 # Gzip compressed format (RFC 1951)
 if options.compress_gzip:
     print_title('Compression using Gzip (RFC 1952)')
-    print
+    print()
     output = compress_gzip(data)
     if not output:
         print_error('Unable to compress')
@@ -488,7 +491,7 @@ if options.decompress_gzip:
 # Automatic detection
 if options.auto_detect:
     print_title('Automatic detection of compressed data')
-    print ()
+    print()
     print_info('Scan input and search for compression at the different offsets...')
     (compr_format, pos, output) = auto_detect(data)
 
@@ -519,4 +522,4 @@ if options.auto_detect:
 if options.output_file and output:
     write_to_file(options.output_file, output)
 
-print ()
+print()
